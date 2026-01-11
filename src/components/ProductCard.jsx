@@ -1,5 +1,5 @@
 function ProductCard({ product, onView }) {
-  console.log(product);
+  
   return (
     <div className="border rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 p-4 bg-white flex flex-col">
 

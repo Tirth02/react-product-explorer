@@ -23,7 +23,7 @@ export async function getProducts({
 /**
  * Fetch product by ID
  */
-export async function getProductById(id) {
+export async function getProductById({id}) {
   const response = await fetch(`${BASE_URL}/randomproducts/${id}`);
 
   if (!response.ok) {
