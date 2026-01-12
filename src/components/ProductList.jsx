@@ -1,14 +1,10 @@
+import PaginationControls from './PaginationControls';
 import ProductCard from './ProductCard';
 
 function ProductList({ products, onProductClick }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-        gap: '16px',
-      }}
-    >
+    <div className='w-full'>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -16,6 +12,7 @@ function ProductList({ products, onProductClick }) {
           onView={() => onProductClick(product.id)}
         />
       ))}
+    </div>
     </div>
   );
 }
