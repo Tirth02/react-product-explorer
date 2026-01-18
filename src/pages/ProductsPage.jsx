@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Loader from "../components/Loader";
 import { getProducts } from "../api/product";
 import Error from "../components/Error";
 import ProductList from "../components/ProductList";
 import { useNavigate } from "react-router-dom";
 import PaginationControls from "../components/PaginationControls";
+import FilterBar from "../components/FilterBar";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -15,6 +16,11 @@ const ProductsPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [mode, setMode] = useState("append");
 
+  const [search,setSearch] = useState("");
+  const [category,setCategory] = useState("all");
+  const [maxPrice, setMaxPrice] = useState(2000);
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +30,7 @@ const ProductsPage = () => {
       try {
         const response = await getProducts({page});
         const newProducts = response.data.data;
+        console.log(response.data);
         if (response && response.data) {
           setProducts((prev) => {
 
@@ -69,14 +76,42 @@ const ProductsPage = () => {
   const onPrev = () =>{
     setMode("replace");
     setPage((prev) => prev - 1);
-  }
+  } 
+
+  const filteredProds = useMemo(() => {
+    return products.filter((product) => {
+        const matchesSearch = product.title.toLowerCase().includes(search.toLowerCase());
+
+        const matchesCategory = category === "all" || product.category === category;
+
+        const matchesPrice = product.price <= maxPrice;
+
+        return matchesSearch && matchesCategory && matchesPrice;
+    })
+  },[search,products,category,maxPrice])
+
+  const categories = useMemo(() => {
+    return Array.from(new Set(products.map((prod) => prod.category)));
+  },[products])
 
   return (
     <div>
       {loading && <Loader />}
       {error && <Error message={error} />}
+      <div className="sticky top-0 z-20 bg-white border-b">
+        <FilterBar
+         search={search}
+         setSearch={setSearch}
+         category = {category}
+         setCategory = {setCategory}
+         categories = {categories}
+         maxPrice = {maxPrice}
+         setMaxPrice = {setMaxPrice}
+        
+        />
+      </div>
       {!loading && !error && (
-        <ProductList products={products} onProductClick={onProductClick} />
+        <ProductList products={filteredProds} onProductClick={onProductClick} />
       )}
       {!loading && !error && products.length > 0 && (
         <div className="flex justify-center">
